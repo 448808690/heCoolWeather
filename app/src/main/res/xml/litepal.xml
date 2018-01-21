@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal >
+<dbname value="hecool_weather"/>
+    <version value="1"/>
+    <list>//添加映射关系
+        <mapping class="com.hecoolweather.com.hecoolweather.db.Province"/>
+        <mapping class="com.hecoolweather.com.hecoolweather.db.county"/>
+        <mapping class="com.hecoolweather.com.hecoolweather.db.city"/>
+
+    </list>
+</litepal>
