@@ -68,7 +68,7 @@ public class ChooseAreaFragment extends Fragment {
         titleView= (TextView) view.findViewById(R.id.title_text);
         backButton= (Button) view.findViewById(R.id.back_button);
         listView= (ListView) view.findViewById(R.id.list_view);
-        adapter=new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,dataList);
+        adapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);
         listView.setAdapter(adapter);
 
 
@@ -108,7 +108,7 @@ public class ChooseAreaFragment extends Fragment {
     }
     private void queryProvinces(){
         titleView.setText("中国");
-        backButton.setVisibility(View.INVISIBLE);
+        backButton.setVisibility(View.GONE);
         listProvinces=DataSupport.findAll(Province.class);
         if(listProvinces.size()>0){
             dataList.clear();
@@ -120,17 +120,17 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
 
         }else {
-            String address="www.guolin.tech/api/china";
+            String address="http://guolin.tech/api/china";
             queryFromServer(address,"province");
         }
 
     }
     private void queryCounties(){
         titleView.setText(selectedCity.getCityName());
-        dataList.clear();
-        listCounties=DataSupport.where("cityId=?",String.valueOf(selectedCity.getId())).find(County.class);
-        if(listCounties.size()>0) {
 
+        listCounties=DataSupport.where("cityid=?",String.valueOf(selectedCity.getId())).find(County.class);
+        if(listCounties.size()>0) {
+            dataList.clear();
             for (County county : listCounties) {
                 dataList.add(county.getCountyName());
             }
@@ -140,7 +140,7 @@ public class ChooseAreaFragment extends Fragment {
         }else{
             int province =selectedProvince.getprovincecode();
             int city=selectedCity.getCityCode();
-            String address="www.guolin.tech/api/china/"+province+"/"+city;
+            String address="http://guolin.tech/api/china/"+province+"/"+city;
             queryFromServer(address,"county");
         }
 
@@ -150,7 +150,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCities() {
         titleView.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
-        listCities= DataSupport.where("provinceId=?",String.valueOf(selectedProvince.getId())).find(City.class);
+        listCities= DataSupport.where("provinceid=?",String.valueOf(selectedProvince.getId())).find(City.class);
         if(listCities.size()>0){
             //遍历 城市添加到数据源中
             dataList.clear();
