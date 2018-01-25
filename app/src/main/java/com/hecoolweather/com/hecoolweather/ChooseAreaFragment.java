@@ -2,6 +2,7 @@ package com.hecoolweather.com.hecoolweather;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.hecoolweather.com.hecoolweather.db.County;
 import com.hecoolweather.com.hecoolweather.db.Province;
 import com.hecoolweather.com.hecoolweather.util.HttpUtil;
 import com.hecoolweather.com.hecoolweather.util.Utility;
+import com.hecoolweather.com.hecoolweather.util.WeatherActivity;
 
 import org.litepal.crud.DataSupport;
 
@@ -88,6 +90,12 @@ public class ChooseAreaFragment extends Fragment {
                 }else if(currentLevel==LEVEL_CITY){
                     selectedCity=listCities.get(i);
                     queryCounties();
+                }else if(currentLevel==LEVEL_COUNTY){
+                    String weatherId=listCounties.get(i).getWeatherId();
+                    Intent intent= new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
 
             }
