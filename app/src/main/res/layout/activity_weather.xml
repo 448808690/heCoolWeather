@@ -5,10 +5,15 @@
     android:background="@color/colorPrimary"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ImageView android:id="@+id/image_background"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
   <ScrollView
       android:id="@+id/weather_layout"
       android:scrollbars="none"
       android:overScrollMode="never"
+      android:fitsSystemWindows="true"
       android:layout_width="match_parent"
       android:layout_height="match_parent">
       <LinearLayout
