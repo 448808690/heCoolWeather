@@ -52,6 +52,7 @@
 
         <fragment
             android:id="@+id/choose_area_fragment"
+
             android:layout_gravity="start"
             android:name="com.hecoolweather.com.hecoolweather.ChooseAreaFragment"
             android:layout_width="match_parent"

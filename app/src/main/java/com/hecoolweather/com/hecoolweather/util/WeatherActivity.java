@@ -1,5 +1,6 @@
 package com.hecoolweather.com.hecoolweather.util;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,6 +25,7 @@ import com.bumptech.glide.util.Util;
 import com.hecoolweather.com.hecoolweather.R;
 import com.hecoolweather.com.hecoolweather.gson.Daily_forecast;
 import com.hecoolweather.com.hecoolweather.gson.Weather;
+import com.hecoolweather.com.hecoolweather.service.AutoUpdateService;
 
 import java.io.IOException;
 import java.util.zip.Inflater;
@@ -48,6 +51,7 @@ public class WeatherActivity extends AppCompatActivity {
     private String mWeatherId;
     private Button openDrawerLayoutBT;
     public DrawerLayout drawerLayout;
+    private AutoCompleteTextView autoCompleteTextViewSeclectCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,7 @@ public class WeatherActivity extends AppCompatActivity {
         image_background = (ImageView) findViewById(R.id.image_background);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         openDrawerLayoutBT = (Button) findViewById(R.id.button_open_drawerlayout);
+        openDrawerLayoutBT.setAlpha(0.8f);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerlayout_id);
         openDrawerLayoutBT.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +86,7 @@ public class WeatherActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
         String imageContent = prefs.getString("image_url", null);
@@ -94,7 +100,7 @@ public class WeatherActivity extends AppCompatActivity {
         if (weatherString != null) {
             //有缓存的时候解析天气并显示到界面上
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.weatherId;
+
             showWeatherInfo(weather);
         } else {
             //没有缓存则去服务器获取并显示到界面上
@@ -106,6 +112,11 @@ public class WeatherActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
+               String weatherString= prefs.getString("weather",null);
+
+                Weather weather=Utility.handleWeatherResponse(weatherString);
+                mWeatherId = weather.basic.weatherId;
                 requestWeather(mWeatherId);
             }
         });
@@ -176,6 +187,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void showWeatherInfo(Weather weather) {
+        if(weather!=null&&"ok".equals(weather.status)){
         String cityName = weather.basic.cityName;
         String updateTime = weather.basic.update.updateTime.split(" ")[1];
         String degree = weather.now.temperature;
@@ -185,6 +197,8 @@ public class WeatherActivity extends AppCompatActivity {
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
         forecastLayout.removeAllViews();
+            Intent intent=new Intent(this, AutoUpdateService.class);
+            startService(intent);
         for (Daily_forecast forecast : weather.daily_forecastList) {
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_item, forecastLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.date_text);
@@ -203,12 +217,17 @@ public class WeatherActivity extends AppCompatActivity {
 
         }
         String comfortTt = "舒适度:\n" + weather.suggestion.comf.comfInfo;
-        String cleanCar = "洗车指数:\n" + "/n" + weather.suggestion.cleanCar.cleanCarInfo;
-        String sport = "运动指数:\n" + "/n" + weather.suggestion.sport.sportInfo;
+        String cleanCar = "洗车指数:\n" + weather.suggestion.cleanCar.cleanCarInfo;
+        String sport = "运动指数:\n"  + weather.suggestion.sport.sportInfo;
         comfortText.setText(comfortTt);
         cleanCarText.setText(cleanCar);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
 
     }
+        else{
+            Toast.makeText(this,"获取天气失败",Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
